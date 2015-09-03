@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WordPress comment clone
+ * Plugin Name: WP Comment Clone
  * Plugin URI: http://odgr.pw
  * Description: Copy post's comments to another post.
  * Version: 1.0
@@ -18,6 +18,8 @@ class WPCommentClone{
     function __construct() {
         add_action( 'admin_enqueue_scripts', array( $this, 'register_admin_scripts' ) );
         add_action( 'add_meta_boxes', array($this,'wpcc_add_meta_box') );
+
+        add_action('wp_ajax_get_posts_by_type', array($this, 'get_posts_by_type'));
     }
 
     function register_admin_scripts(){
@@ -62,10 +64,34 @@ class WPCommentClone{
                 <select autocomplete="off" disabled="disabled" name='wpcc_select_post' id='wpcc_select_post'>
                     <option value="0">Select Post</option>
                 </select>
-                <span class="spinner wpcc-clone-spinner is-active"></span>
+                <span class="spinner wpcc-clone-spinner"></span>
             </p>
-            <p><input type="button" value="Clone Comments" name="wpcc-clone-btn" id="wpcc-clone-btn" class="button-primary"></p>
+            <?php wp_nonce_field( 'wpcc_comment_clone_xxx', 'wpcc_mb_nonce_' );?>
+            <p><input disabled="disabled" autocomplete="off" type="button" value="Clone Comments" name="wpcc-clone-btn" id="wpcc-clone-btn" class="button-primary"></p>
         <?php
+    }
+
+    function get_posts_by_type(){
+        $response = array("status" => false);
+
+        if ( wp_verify_nonce( $_POST['nonce'], 'wpcc_comment_clone_xxx' ) ) {
+            $post_type = $_POST['post_type'];
+
+            $args = array( 'posts_per_page' => -1, 'orderby' => 'title','post_type'=> $post_type );
+            $_posts = array();
+            $posts = get_posts( $args );
+
+            if( is_array($posts) && count($posts) > 0){
+                foreach($posts as $key=>$post){
+                    $_posts[$key]['id'] = $post->ID;
+                    $_posts[$key]['title'] = $post->post_title;
+                }
+            }
+
+            $response = array("status" => true, 'posts' =>$_posts);
+      	}
+
+        wp_send_json( $response );
     }
 }
 $WPCommentClone = new WPCommentClone();
