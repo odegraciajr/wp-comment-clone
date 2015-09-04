@@ -1,10 +1,33 @@
 jQuery(document).ready(function($){
     $("#wpcc-clone-btn").click(function(){
-        var post_id = parseInt($("#wpcc_select_post").val());
+        var post_id_to_clone = parseInt($("#wpcc_select_post").val());
+        var post_id = parseInt($(this).data('post-id'));
 
-        if(post_id){
+        if(post_id_to_clone){
             $(this).val("Processing...").prop("disabled",true);
-            alert('hey do!');
+            var r = confirm("Are you sure you want to clone all the comments?");
+
+            if (r === true) {
+                $(".spinner.wpcc-clone-spinner").addClass('is-active');
+
+                var data = {
+                    'action': 'clone_comments',
+                    'post_id': post_id,
+                    'post_id_to_clone': post_id_to_clone,
+                    'nonce': $("#wpcc_mb_nonce_").val()
+                };
+                $.post(ajaxurl, data, function(obj) {
+                    if( obj.status ){
+                        alert(obj.count + " Comments cloned!");
+                        location.reload();
+                    }
+                }).done(function() {
+                    $(".spinner.wpcc-clone-spinner").removeClass('is-active');
+                });
+
+            }else{
+                $(this).val("Clone Comments").prop("disabled",false);
+            }
         }else{
             $('#wpcc_select_post').focus();
         }
@@ -34,4 +57,39 @@ jQuery(document).ready(function($){
             $(".spinner.wpcc-clone-spinner").removeClass('is-active');
         });
     });
+
+    $(".wpcc_advance_settings").click(function(e){
+        e.preventDefault();
+        $("#wpcc_advance_settings_wrap").toggle();
+    });
+
+    $("#wpcc-delete-comments-btn").click(function(){
+        var $btn = $(this);
+        var post_id = parseInt($(this).data('post-id'));
+
+        $(this).val("Processing...").prop("disabled",true);
+        $(".spinner.wpcc-delete-spinner").addClass('is-active');
+        var r = confirm("Are you sure you want to delete all the comments?");
+        if (r === true) {
+            var data = {
+                'action': 'wpcc_delete_comments',
+                'post_id': post_id,
+                'nonce': $("#wpcc_delete_mb_nonce_").val()
+            };
+
+            $.post(ajaxurl, data, function(obj) {
+                if( obj.status ){
+                    alert(obj.delete_count + " Comment(s) deleted!");
+                    location.reload();
+                }
+            }).done(function() {
+                $(".spinner.wpcc-delete-spinner").removeClass('is-active');
+                $btn.val("Delete All Comments").prop("disabled",false);
+            });
+        }else{
+            $btn.val("Delete All Comments").prop("disabled",false);
+        }
+
+    });
+
 });

@@ -1,7 +1,14 @@
-.spinner.wpcc-clone-spinner{
+.spinner.wpcc-clone-spinner,
+.spinner.wpcc-delete-spinner{
     float: none;
     margin: 0;
 }
 #wpcc_select_post{
-    
+
+}
+#wpcc_advance_settings_wrap{
+    display: none;
+}
+#wpcc_add_meta_box .description .red{
+    color:red;
 }
