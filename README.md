@@ -3,7 +3,7 @@
 Clone WordPress comment to another posts or pages.
 
 ### How to install
-```sh
+```bash
 // On your plugin folder
 mkdir wp-comment-clone && cd wp-comment-clone
 git clone https://github.com/odegraciajr/wp-comment-clone.git .
