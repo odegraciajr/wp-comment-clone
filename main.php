@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: WP Comment Clone
- * Plugin URI: http://odgr.pw
- * Description: Copy post's comments to another post.
- * Version: 1.0
+ * Plugin URI: https://github.com/odegraciajr/wp-comment-clone
+ * Description: Clone WordPress comment to another posts or pages.
+ * Version: 1.1
  * Author: Oscar De Gracia Jr.
- * Author URI: http://odgr.pw
+ * Author URI: https://github.com/odegraciajr
  * License: A "Slug" license name e.g. GPL2
  */
 defined('ABSPATH') or die("No script kiddies please!");
@@ -30,7 +30,7 @@ class WPCommentClone{
     }
 
     function wpcc_add_meta_box( $post_type ) {
-        $post_types = array('lg_level');     //limit meta box to certain post types
+        $post_types = array('post', 'page'); //limit meta box to certain post types
         if ( in_array( $post_type, $post_types )) {
             add_meta_box(
                 'wpcc_add_meta_box'
